@@ -19,8 +19,6 @@ npm run format             # Prettier 格式化
 npm run format:check       # 检查格式（不修改）
 npm run sync:tools         # 将 tools.json 同步到 index.html/README/sitemap/manifest
 npm test                   # 验证 tools.json 完整性
-npm run test:e2e           # Puppeteer E2E 测试
-npm run test:all           # tools.json 验证 + E2E
 ```
 
 **没有** `npm run build` 或 `npm start`。提交前必须通过：`npm run lint && npm run format:check`

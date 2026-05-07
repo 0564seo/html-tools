@@ -221,9 +221,15 @@ function updateIndexHtml(categoriesJs, toolsJs, toolCount, categoryCount) {
     updated = true;
   }
 
-  // 更新 SEO meta 中的工具数量
-  html = html.replace(/(\d+)\+\s*个纯前端/g, `${toolCount}+ 个纯前端`);
-  html = html.replace(/包含\s*\d+\+?\s*个工具/g, `包含 ${toolCount}+ 个工具`);
+  // 更新 SEO meta / OG / Twitter / JSON-LD 中所有 "X+ 个 [修饰词] 工具(集)?" 表述
+  // 覆盖：包含 1001+ 个实用工具 / 1001+ 个纯前端实用工具 / 1001+ 个纯前端开发者工具集 / 1001+ 个工具
+  // 长修饰词放前以便 alternation 优先匹配
+  html = html.replace(
+    /\d+\+?\s*个(纯前端实用|纯前端开发者|纯前端|实用|开发者)?\s*工具(集)?/g,
+    (_m, modifier, suffix) => `${toolCount}+ 个${modifier || ''}工具${suffix || ''}`
+  );
+  // 同步类别数（如 "等 35 个类别"、"覆盖 35 个类别"）
+  html = html.replace(/\d+\s*个类别/g, `${categoryCount} 个类别`);
 
   // 更新统计初始值
   html = html.replace(/(<span[^>]*id="tool-count"[^>]*>)\d+(<\/span>)/g, `$1${toolCount}$2`);
@@ -347,8 +353,11 @@ function updateManifest(toolCount) {
     let manifest = fs.readFileSync(MANIFEST_JSON, 'utf8');
     const original = manifest;
 
-    // 更新描述中的工具数量 (只替换数字部分，保留后续描述)
-    manifest = manifest.replace(/\d+\+?\s*个纯前端/g, `${toolCount}+ 个纯前端`);
+    // 更新描述中的工具数量 (覆盖所有 "X+ 个 [修饰词] 工具(集)?" 表述)
+    manifest = manifest.replace(
+      /\d+\+?\s*个(纯前端实用|纯前端开发者|纯前端|实用|开发者)?\s*工具(集)?/g,
+      (_m, modifier, suffix) => `${toolCount}+ 个${modifier || ''}工具${suffix || ''}`
+    );
 
     if (manifest !== original) {
       fs.writeFileSync(MANIFEST_JSON, manifest);
