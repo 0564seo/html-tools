@@ -26,6 +26,7 @@ const INDEX_HTML = path.join(ROOT_DIR, 'index.html');
 const README_MD = path.join(ROOT_DIR, 'README.md');
 const SITEMAP_XML = path.join(ROOT_DIR, 'sitemap.xml');
 const MANIFEST_JSON = path.join(ROOT_DIR, 'manifest.json');
+const LLMS_TXT = path.join(ROOT_DIR, 'llms.txt');
 
 // 网站域名 (不带尾部斜杠)
 const SITE_URL = 'https://tools.realtime-ai.chat';
@@ -170,6 +171,7 @@ function main() {
     readme: updateReadme(toolCount, categoryCount),
     sitemap: updateSitemap(tools, toolCount),
     manifest: updateManifest(toolCount),
+    llmsTxt: updateLlmsTxt(toolCount),
     github: updateGitHubDescription(toolCount)
   };
 
@@ -191,6 +193,7 @@ function main() {
   console.log(`   README.md:     ${results.readme ? '✅ 已更新' : '⏭️  无变化'}`);
   console.log(`   sitemap.xml:   ${results.sitemap ? '✅ 已更新' : '⏭️  无变化'}`);
   console.log(`   manifest.json: ${results.manifest ? '✅ 已更新' : '⏭️  无变化'}`);
+  console.log(`   llms.txt:      ${results.llmsTxt ? '✅ 已更新' : '⏭️  无变化'}`);
   console.log(`   GitHub 描述:   ${results.github ? '✅ 已更新' : '⏭️  无变化'}`);
   console.log('='.repeat(50));
 }
@@ -369,6 +372,37 @@ function updateManifest(toolCount) {
     return false;
   } catch (err) {
     console.log(`⚠️  manifest.json: ${err.message}`);
+    return false;
+  }
+}
+
+/**
+ * 更新 llms.txt
+ */
+function updateLlmsTxt(toolCount) {
+  try {
+    if (!fs.existsSync(LLMS_TXT)) {
+      return false;
+    }
+
+    let txt = fs.readFileSync(LLMS_TXT, 'utf8');
+    const original = txt;
+
+    txt = txt.replace(
+      /\d+\+?\s*个(纯前端实用|纯前端开发者|纯前端|实用|开发者)?\s*工具(集)?/g,
+      (_m, modifier, suffix) => `${toolCount}+ 个${modifier || ''}工具${suffix || ''}`
+    );
+
+    if (txt !== original) {
+      fs.writeFileSync(LLMS_TXT, txt);
+      console.log(`✅ llms.txt: ${toolCount}+ 工具`);
+      return true;
+    }
+
+    console.log('⏭️  llms.txt: 无需更新');
+    return false;
+  } catch (err) {
+    console.log(`⚠️  llms.txt: ${err.message}`);
     return false;
   }
 }
