@@ -69,6 +69,11 @@ for (const tool of tools) {
   const $ = cheerio.load(fragmentHtml, null, false);
   
   let styles = '';
+  $('link[rel="stylesheet"]').each((i, el) => {
+    styles += $.html(el) + '\n';
+  });
+  $('link[rel="stylesheet"]').remove();
+
   $('style').each((i, el) => {
     styles += $.html(el) + '\n';
   });
