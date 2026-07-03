@@ -5,10 +5,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "npm run sync && node scripts/build-ssg.js",
+    "dev": "node scripts/dev.mjs",
+    "build": "npm run sync",
     "test": "node tests/run.js",
     "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
-    "lint:html": "htmlhint \"dist/**/*.html\" --ignore \"**/ByteDanceVerify.html,**/baidu_verify_*.html,**/js-playground.html,**/code-screenshot.html,**/generator/wave-bg.html\"",
+    "lint:html": "htmlhint \"tools/**/*.html\" --ignore \"**/ByteDanceVerify.html,**/baidu_verify_*.html,**/js-playground.html,**/code-screenshot.html,**/generator/wave-bg.html\"",
     "lint:css": "stylelint \"tools/**/*.html\" --custom-syntax postcss-html",
     "lint:js": "eslint \"tools/**/*.html\" \"assets/js/**/*.js\"",
     "lint:fix": "npm run lint:css -- --fix",

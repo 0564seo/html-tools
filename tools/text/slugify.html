@@ -1,672 +1,769 @@
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Slugify 工具 - WebUtils</title>
 
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="生成 URL slug" />
+    <meta name="keywords" content="slugify 工具" />
+    <meta name="author" content="WebUtils" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://tools.realtime-ai.chat/tools/text/slugify.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Slugify 工具 - WebUtils" />
+    <meta property="og:description" content="生成 URL slug" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tools.realtime-ai.chat/tools/text/slugify.html" />
+    <meta property="og:site_name" content="WebUtils" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:image" content="https://tools.realtime-ai.chat/social-preview.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="640" />
+    <meta property="og:image:type" content="image/png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Slugify 工具 - WebUtils" />
+    <meta name="twitter:description" content="生成 URL slug" />
+    <meta name="twitter:image" content="https://tools.realtime-ai.chat/social-preview.png" />
+
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="manifest" href="../../manifest.json" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://tools.realtime-ai.chat/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "文本工具",
+      "item": "https://tools.realtime-ai.chat/tools/text/index.html"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Slugify 工具",
+      "item": "https://tools.realtime-ai.chat/tools/text/slugify.html"
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+      {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Slugify 工具 - WebUtils",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+    </script>
+
+    <!-- Global & Tool Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/css/tool-base.css" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
-/* CSS 变量兼容垫片 (修复 d03c9548 改名遗留) */
-      :root {
-        /* color-* 家族 → 新设计系统 */
-        --color-bg-deep: var(--bg-deep, #0a0a0f);
-        --color-bg-surface: var(--bg-surface, #12121a);
-        --color-bg-subtle: var(--bg-card, #1a1a24);
-        --color-bg-card: var(--bg-card, #1a1a24);
-        --color-bg-input: var(--bg-input, #0e0e14);
-        --color-text-primary: var(--text-primary, #e8e8ed);
-        --color-text-secondary: var(--text-secondary, #8888a0);
-        --color-text-muted: var(--text-muted, #55556a);
-        --color-border-default: var(--border-subtle, #2a2a3a);
-        --color-border-subtle: var(--border-subtle, #2a2a3a);
-        --color-border-strong: var(--border-strong, #3a3a4a);
-        --color-accent-primary: var(--accent-cyan, #00f5d4);
-        --color-accent-secondary: var(--accent-magenta, #f72585);
-        --color-accent-tertiary: var(--accent-blue, #4cc9f0);
-        --color-accent-cyan: var(--accent-cyan, #00f5d4);
-        --color-accent-purple: var(--accent-purple, #8b5cf6);
-        --color-accent-pink: var(--accent-magenta, #f72585);
-        --color-accent-orange: #ff9f1c;
-        --color-success: var(--accent-green, #10b981);
-        --color-warning: var(--accent-yellow, #fbbf24);
-        --color-error: var(--accent-red, #f43f5e);
-        --color-danger: var(--accent-red, #f43f5e);
-        --color-info: var(--accent-blue, #4cc9f0);
-        --color-safe: var(--accent-green, #10b981);
+  /* CSS 变量兼容垫片 (修复 d03c9548 改名遗留) */
+  :root {
+    /* color-* 家族 → 新设计系统 */
+    --color-bg-deep: var(--bg-deep, #0a0a0f);
+    --color-bg-surface: var(--bg-surface, #12121a);
+    --color-bg-subtle: var(--bg-card, #1a1a24);
+    --color-bg-card: var(--bg-card, #1a1a24);
+    --color-bg-input: var(--bg-input, #0e0e14);
+    --color-text-primary: var(--text-primary, #e8e8ed);
+    --color-text-secondary: var(--text-secondary, #8888a0);
+    --color-text-muted: var(--text-muted, #55556a);
+    --color-border-default: var(--border-subtle, #2a2a3a);
+    --color-border-subtle: var(--border-subtle, #2a2a3a);
+    --color-border-strong: var(--border-strong, #3a3a4a);
+    --color-accent-primary: var(--accent-cyan, #00f5d4);
+    --color-accent-secondary: var(--accent-magenta, #f72585);
+    --color-accent-tertiary: var(--accent-blue, #4cc9f0);
+    --color-accent-cyan: var(--accent-cyan, #00f5d4);
+    --color-accent-purple: var(--accent-purple, #8b5cf6);
+    --color-accent-pink: var(--accent-magenta, #f72585);
+    --color-accent-orange: #ff9f1c;
+    --color-success: var(--accent-green, #10b981);
+    --color-warning: var(--accent-yellow, #fbbf24);
+    --color-error: var(--accent-red, #f43f5e);
+    --color-danger: var(--accent-red, #f43f5e);
+    --color-info: var(--accent-blue, #4cc9f0);
+    --color-safe: var(--accent-green, #10b981);
 
-        /* 玻璃拟态 */
-        --glass-bg: rgba(26, 26, 36, 0.72);
-        --glass-border: rgba(255, 255, 255, 0.08);
-        --glass-blur: 24px;
-        --glass-saturate: 180%;
-        --glass-radius: 16px;
-        --glass-border-width: 1px;
-        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    /* 玻璃拟态 */
+    --glass-bg: rgba(26, 26, 36, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-blur: 24px;
+    --glass-saturate: 180%;
+    --glass-radius: 16px;
+    --glass-border-width: 1px;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 
-        /* 间距尺度 */
-        --space-1: 4px;
-        --space-2: 8px;
-        --space-3: 12px;
-        --space-4: 16px;
-        --space-5: 20px;
-        --space-6: 24px;
-        --space-8: 32px;
-        --spacing-sm: 8px;
-        --spacing-md: 16px;
-        --spacing-lg: 24px;
-        --spacing-card: 16px;
+    /* 间距尺度 */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-card: 16px;
 
-        /* 阴影 */
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-        --shadow-glow: 0 0 20px rgba(0, 245, 212, 0.15);
-        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    /* 阴影 */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(0, 245, 212, 0.15);
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-        /* 辉光 */
-        --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.4);
-        --glow-purple: 0 0 20px rgba(139, 92, 246, 0.4);
-        --glow-green: 0 0 20px rgba(16, 185, 129, 0.4);
-        --glow-red: 0 0 20px rgba(244, 63, 94, 0.4);
-        --glow-magenta: 0 0 20px rgba(247, 37, 133, 0.4);
-        --accent-glow: 0 0 20px rgba(0, 245, 212, 0.4);
+    /* 辉光 */
+    --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.4);
+    --glow-purple: 0 0 20px rgba(139, 92, 246, 0.4);
+    --glow-green: 0 0 20px rgba(16, 185, 129, 0.4);
+    --glow-red: 0 0 20px rgba(244, 63, 94, 0.4);
+    --glow-magenta: 0 0 20px rgba(247, 37, 133, 0.4);
+    --accent-glow: 0 0 20px rgba(0, 245, 212, 0.4);
 
-        /* 过渡 */
-        --transition-fast: 150ms ease;
-        --transition-normal: 250ms ease;
-        --transition: 200ms ease;
+    /* 过渡 */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition: 200ms ease;
 
-        /* 圆角 */
-        --radius-full: 9999px;
-        --radius-xl: 24px;
-        --border-radius: 8px;
+    /* 圆角 */
+    --radius-full: 9999px;
+    --radius-xl: 24px;
+    --border-radius: 8px;
 
-        /* 布局 */
-        --nav-height: 56px;
-        --container-max: 1400px;
-        --container-bg: var(--bg-card, #1a1a24);
-        --safe-area-top: env(safe-area-inset-top, 0px);
-        --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    /* 布局 */
+    --nav-height: 56px;
+    --container-max: 1400px;
+    --container-bg: var(--bg-card, #1a1a24);
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 
-        /* 单名旧约定 */
-        --bg-color: var(--bg-deep, #0a0a0f);
-        --bg-secondary: var(--bg-surface, #12121a);
-        --bg-tertiary: var(--bg-card, #1a1a24);
-        --bg-elevated: var(--bg-card-hover, #22222e);
-        --bg-hover: var(--bg-card-hover, #22222e);
-        --bg-card-hover: #22222e;
-        --bg-gradient: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
-        --primary-gradient: linear-gradient(135deg, #00f5d4 0%, #4cc9f0 100%);
-        --text-color: var(--text-primary, #e8e8ed);
-        --primary-color: var(--accent-cyan, #00f5d4);
-        --primary-focus: rgba(0, 245, 212, 0.25);
-        --secondary-color: var(--accent-magenta, #f72585);
-        --tertiary-color: var(--text-muted, #55556a);
-        --accent-color: var(--accent-cyan, #00f5d4);
-        --accent-hover: #2dffe2;
-        --accent-light: rgba(0, 245, 212, 0.15);
-        --accent-pink: var(--accent-magenta, #f72585);
-        --accent-orange: #ff9f1c;
-        --accent-gold: #ffd166;
-        --accent-brown: #a0522d;
-        --success-color: var(--accent-green, #10b981);
-        --good-color: var(--accent-green, #10b981);
-        --warning-color: var(--accent-yellow, #fbbf24);
-        --error-color: var(--accent-red, #f43f5e);
-        --danger-color: var(--accent-red, #f43f5e);
-        --info-color: var(--accent-blue, #4cc9f0);
-        --muted-color: var(--text-muted, #55556a);
-        --muted-border-color: var(--border-subtle, #2a2a3a);
-        --hover-color: var(--accent-cyan, #00f5d4);
-        --border-default: var(--border-subtle, #2a2a3a);
-        --border-focus: var(--accent-cyan, #00f5d4);
-        --border-accent: var(--accent-cyan, #00f5d4);
-        --card-background-color: var(--bg-card, #1a1a24);
-        --code-background-color: var(--bg-input, #0e0e14);
+    /* 单名旧约定 */
+    --bg-color: var(--bg-deep, #0a0a0f);
+    --bg-secondary: var(--bg-surface, #12121a);
+    --bg-tertiary: var(--bg-card, #1a1a24);
+    --bg-elevated: var(--bg-card-hover, #22222e);
+    --bg-hover: var(--bg-card-hover, #22222e);
+    --bg-card-hover: #22222e;
+    --bg-gradient: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
+    --primary-gradient: linear-gradient(135deg, #00f5d4 0%, #4cc9f0 100%);
+    --text-color: var(--text-primary, #e8e8ed);
+    --primary-color: var(--accent-cyan, #00f5d4);
+    --primary-focus: rgba(0, 245, 212, 0.25);
+    --secondary-color: var(--accent-magenta, #f72585);
+    --tertiary-color: var(--text-muted, #55556a);
+    --accent-color: var(--accent-cyan, #00f5d4);
+    --accent-hover: #2dffe2;
+    --accent-light: rgba(0, 245, 212, 0.15);
+    --accent-pink: var(--accent-magenta, #f72585);
+    --accent-orange: #ff9f1c;
+    --accent-gold: #ffd166;
+    --accent-brown: #a0522d;
+    --success-color: var(--accent-green, #10b981);
+    --good-color: var(--accent-green, #10b981);
+    --warning-color: var(--accent-yellow, #fbbf24);
+    --error-color: var(--accent-red, #f43f5e);
+    --danger-color: var(--accent-red, #f43f5e);
+    --info-color: var(--accent-blue, #4cc9f0);
+    --muted-color: var(--text-muted, #55556a);
+    --muted-border-color: var(--border-subtle, #2a2a3a);
+    --hover-color: var(--accent-cyan, #00f5d4);
+    --border-default: var(--border-subtle, #2a2a3a);
+    --border-focus: var(--accent-cyan, #00f5d4);
+    --border-accent: var(--accent-cyan, #00f5d4);
+    --card-background-color: var(--bg-card, #1a1a24);
+    --code-background-color: var(--bg-input, #0e0e14);
 
-        /* Pico CSS 框架默认 */
-        --pico-background-color: var(--bg-deep, #0a0a0f);
-        --pico-color: var(--text-primary, #e8e8ed);
-        --pico-muted-color: var(--text-muted, #55556a);
-        --pico-muted-border-color: var(--border-subtle, #2a2a3a);
-        --pico-muted-background: var(--bg-surface, #12121a);
-        --pico-card-background-color: var(--bg-card, #1a1a24);
-        --pico-code-background-color: var(--bg-input, #0e0e14);
-        --pico-primary: var(--accent-cyan, #00f5d4);
-        --pico-primary-background: var(--accent-cyan, #00f5d4);
-        --pico-primary-inverse: #0a0a0f;
-        --pico-primary-focus: rgba(0, 245, 212, 0.25);
-        --pico-primary-rgb: 0, 245, 212;
-        --pico-secondary: var(--text-secondary, #8888a0);
-        --pico-secondary-background: var(--bg-card, #1a1a24);
-        --pico-border-radius: 8px;
-        --pico-contrast: var(--text-primary, #e8e8ed);
-        --pico-contrast-background: var(--bg-card-hover, #22222e);
-        --pico-del-color: var(--accent-red, #f43f5e);
-        --pico-ins-color: var(--accent-green, #10b981);
-        --pico-form-element-border-color: var(--border-strong, #3a3a4a);
-        --pico-form-element-background-color: var(--bg-input, #0e0e14);
-      }
+    /* Pico CSS 框架默认 */
+    --pico-background-color: var(--bg-deep, #0a0a0f);
+    --pico-color: var(--text-primary, #e8e8ed);
+    --pico-muted-color: var(--text-muted, #55556a);
+    --pico-muted-border-color: var(--border-subtle, #2a2a3a);
+    --pico-muted-background: var(--bg-surface, #12121a);
+    --pico-card-background-color: var(--bg-card, #1a1a24);
+    --pico-code-background-color: var(--bg-input, #0e0e14);
+    --pico-primary: var(--accent-cyan, #00f5d4);
+    --pico-primary-background: var(--accent-cyan, #00f5d4);
+    --pico-primary-inverse: #0a0a0f;
+    --pico-primary-focus: rgba(0, 245, 212, 0.25);
+    --pico-primary-rgb: 0, 245, 212;
+    --pico-secondary: var(--text-secondary, #8888a0);
+    --pico-secondary-background: var(--bg-card, #1a1a24);
+    --pico-border-radius: 8px;
+    --pico-contrast: var(--text-primary, #e8e8ed);
+    --pico-contrast-background: var(--bg-card-hover, #22222e);
+    --pico-del-color: var(--accent-red, #f43f5e);
+    --pico-ins-color: var(--accent-green, #10b981);
+    --pico-form-element-border-color: var(--border-strong, #3a3a4a);
+    --pico-form-element-background-color: var(--bg-input, #0e0e14);
+  }
 
-      /* 浅色主题覆盖：glass/shadow/glow 等主题敏感变量 */
-      [data-theme="light"] {
-        /* 玻璃拟态 — 浅色版（半透明白） */
-        --glass-bg: rgba(255, 255, 255, 0.78);
-        --glass-border: rgba(0, 0, 0, 0.06);
-        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  /* 浅色主题覆盖：glass/shadow/glow 等主题敏感变量 */
+  [data-theme="light"] {
+    /* 玻璃拟态 — 浅色版（半透明白） */
+    --glass-bg: rgba(255, 255, 255, 0.78);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 
-        /* 阴影 — 浅色版（更淡） */
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-        --shadow-glow: 0 0 20px rgba(0, 184, 148, 0.12);
-        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* 阴影 — 浅色版（更淡） */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 20px rgba(0, 184, 148, 0.12);
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-        /* 辉光 — 浅色版（透明度降低） */
-        --glow-cyan: 0 0 16px rgba(0, 184, 148, 0.18);
-        --glow-purple: 0 0 16px rgba(139, 92, 246, 0.18);
-        --glow-green: 0 0 16px rgba(16, 185, 129, 0.18);
-        --glow-red: 0 0 16px rgba(244, 63, 94, 0.18);
-        --glow-magenta: 0 0 16px rgba(247, 37, 133, 0.18);
-        --accent-glow: 0 0 16px rgba(0, 184, 148, 0.18);
+    /* 辉光 — 浅色版（透明度降低） */
+    --glow-cyan: 0 0 16px rgba(0, 184, 148, 0.18);
+    --glow-purple: 0 0 16px rgba(139, 92, 246, 0.18);
+    --glow-green: 0 0 16px rgba(16, 185, 129, 0.18);
+    --glow-red: 0 0 16px rgba(244, 63, 94, 0.18);
+    --glow-magenta: 0 0 16px rgba(247, 37, 133, 0.18);
+    --accent-glow: 0 0 16px rgba(0, 184, 148, 0.18);
 
-        /* 渐变 — 浅色版 */
-        --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
+    /* 渐变 — 浅色版 */
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #fff 100%);
 
-        /* hover/elevated 替换为浅色调 */
-        --bg-card-hover: #f1f5f9;
-        --bg-elevated: #fff;
-        --bg-hover: #f1f5f9;
-        --accent-light: rgba(0, 184, 148, 0.12);
-        --accent-hover: #00d4aa;
+    /* hover/elevated 替换为浅色调 */
+    --bg-card-hover: #f1f5f9;
+    --bg-elevated: #fff;
+    --bg-hover: #f1f5f9;
+    --accent-light: rgba(0, 184, 148, 0.12);
+    --accent-hover: #00d4aa;
 
-        /* Pico 浅色覆盖（默认 Pico 行为） */
-        --pico-primary-inverse: #fff;
-        --pico-contrast-background: #f1f5f9;
-      }
+    /* Pico 浅色覆盖（默认 Pico 行为） */
+    --pico-primary-inverse: #fff;
+    --pico-contrast-background: #f1f5f9;
+  }
 
-      :root {
-        --bg-deep: #0a0a0f;
-        --bg-surface: #12121a;
-        --bg-card: #1a1a24;
-        --bg-input: #0e0e14;
-        --text-primary: #e8e8ed;
-        --text-secondary: #8888a0;
-        --text-muted: #55556a;
-        --border-subtle: #2a2a3a;
-        --border-strong: #3a3a4a;
-        --accent-cyan: #00f5d4;
-        --accent-magenta: #f72585;
-        --accent-green: #10b981;
-        --accent-red: #f43f5e;
-        --accent-yellow: #fbbf24;
-        --accent-blue: #4cc9f0;
-        --accent-purple: #7b2cbf;
-        --radius-sm: 4px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --font-sans:
-          "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
-        --font-mono: "JetBrains Mono", "Courier New", monospace;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
+  :root {
+    --bg-deep: #0a0a0f;
+    --bg-surface: #12121a;
+    --bg-card: #1a1a24;
+    --bg-input: #0e0e14;
+    --text-primary: #e8e8ed;
+    --text-secondary: #8888a0;
+    --text-muted: #55556a;
+    --border-subtle: #2a2a3a;
+    --border-strong: #3a3a4a;
+    --accent-cyan: #00f5d4;
+    --accent-magenta: #f72585;
+    --accent-green: #10b981;
+    --accent-red: #f43f5e;
+    --accent-yellow: #fbbf24;
+    --accent-blue: #4cc9f0;
+    --accent-purple: #7b2cbf;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font-sans: "Space Grotesk", -apple-system, blinkmacsystemfont, "Segoe UI", roboto, sans-serif;
+    --font-mono: "JetBrains Mono", "Courier New", monospace;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
 
-      [data-theme="light"] {
-        --bg-deep: #fafafa;
-        --bg-surface: #fff;
-        --bg-card: #fff;
-        --bg-input: #f5f5f5;
-        --text-primary: #1a1a1a;
-        --text-secondary: #666;
-        --text-muted: #999;
-        --border-subtle: #e5e5e5;
-        --border-strong: #d5d5d5;
-        --accent-cyan: #00d4b8;
-        --accent-magenta: #e63975;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      }
+  [data-theme="light"] {
+    --bg-deep: #fafafa;
+    --bg-surface: #fff;
+    --bg-card: #fff;
+    --bg-input: #f5f5f5;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --border-subtle: #e5e5e5;
+    --border-strong: #d5d5d5;
+    --accent-cyan: #00d4b8;
+    --accent-magenta: #e63975;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
 
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--border-subtle);
-        background: var(--color-bg-card);
-        cursor: pointer;
-        font-size: 1.2rem;
-        z-index: 100;
-        transition: all 0.2s;
-      }
-      .theme-toggle:hover {
-        transform: scale(1.1);
-      }
-      * {
-        box-sizing: border-box;
-      }
+  .theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-subtle);
+    background: var(--color-bg-card);
+    cursor: pointer;
+    font-size: 1.2rem;
+    z-index: 100;
+    transition: all 0.2s;
+  }
+  .theme-toggle:hover {
+    transform: scale(1.1);
+  }
+  * {
+    box-sizing: border-box;
+  }
 
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg-deep);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 24px;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-      }
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
 
-      .back-link {
-        display: inline-block;
-        margin-bottom: 16px;
-        color: var(--accent-cyan);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      .back-link:hover {
-        text-decoration: underline;
-      }
-      h1 {
-        font-size: 1.75rem;
-        margin: 0 0 8px;
-      }
-      .desc {
-        color: var(--text-muted);
-        margin: 0 0 24px;
-        font-size: 0.95rem;
-      }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--accent-cyan);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .back-link:hover {
+    text-decoration: underline;
+  }
+  h1 {
+    font-size: 1.75rem;
+    margin: 0 0 8px;
+  }
+  .desc {
+    color: var(--text-muted);
+    margin: 0 0 24px;
+    font-size: 0.95rem;
+  }
 
-      .card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        box-shadow: var(--shadow);
-        margin-bottom: 20px;
-      }
-      .btn-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
 
-      button {
-        padding: 10px 16px;
-        font-size: 0.95rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        background: var(--bg-card);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      button:hover {
-        border-color: var(--accent-cyan);
-        color: var(--accent-cyan);
-      }
-      button.primary {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      button.primary:hover {
-        background: var(--accent-cyan);
-        border-color: var(--accent-cyan);
-        color: #fff;
-      }
-      label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-      }
+  button {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  button:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+  }
+  button.primary {
+    background: var(--accent-cyan);
+    border-color: var(--accent-cyan);
+    color: #fff;
+  }
+  button.primary:hover {
+    background: var(--accent-cyan);
+    border-color: var(--accent-cyan);
+    color: #fff;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
 
-      input[type="text"],
-      select {
-        width: 100%;
-        padding: 12px;
-        font-size: 1rem;
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        margin-bottom: 16px;
-      }
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+  }
 
-      input:focus,
-      select:focus {
-        outline: none;
-        border-color: var(--accent-cyan);
-        box-shadow: 0 0 0 3px rgb(13, 110, 253, 0.15);
-      }
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgb(13, 110, 253, 0.15);
+  }
 
-      .options {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 16px;
-        padding: 16px;
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-      }
+  .options {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: var(--bg-deep);
+    border-radius: var(--radius-md);
+  }
 
-      .options label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-weight: normal;
-        margin: 0;
-        cursor: pointer;
-      }
+  .options label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    margin: 0;
+    cursor: pointer;
+  }
 
-      .result-box {
-        background: var(--bg-deep);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        margin-bottom: 16px;
-      }
+  .result-box {
+    background: var(--bg-deep);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
 
-      .result-box .label {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-      }
+  .result-box .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
 
-      .result-box .value {
-        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        font-size: 1.1rem;
-        word-break: break-all;
-        color: var(--accent-cyan);
-      }
+  .result-box .value {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    font-size: 1.1rem;
+    word-break: break-all;
+    color: var(--accent-cyan);
+  }
 
-      .stats {
-        display: flex;
-        gap: 24px;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-      }
-      .status {
-        font-size: 0.85rem;
-        margin-top: 12px;
-        min-height: 20px;
-      }
-      .status.success {
-        color: var(--accent-green);
-      }
-      .status.error {
-        color: var(--accent-red);
-      }
+  .stats {
+    display: flex;
+    gap: 24px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  .status {
+    font-size: 0.85rem;
+    margin-top: 12px;
+    min-height: 20px;
+  }
+  .status.success {
+    color: var(--accent-green);
+  }
+  .status.error {
+    color: var(--accent-red);
+  }
 
-      footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-subtle);
-        color: var(--text-muted);
-        font-size: 0.85rem;
-      }
-      footer a {
-        color: var(--accent-cyan);
-        text-decoration: none;
-      }
-      footer a:hover {
-        text-decoration: underline;
-      }
+  footer {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  footer a {
+    color: var(--accent-cyan);
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
 
-      .breadcrumb {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 8px 15px;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        font-size: 0.85rem;
-      }
-      .breadcrumb a {
-        color: #667eea;
-        text-decoration: none;
-      }
-      .breadcrumb a:hover {
-        text-decoration: underline;
-      }
-      .breadcrumb span {
-        color: #999;
-        margin: 0 5px;
-      }
+  .breadcrumb {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 15px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+  }
+  .breadcrumb a {
+    color: #667eea;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  .breadcrumb span {
+    color: #999;
+    margin: 0 5px;
+  }
 </style>
+  </head>
+  <body>
+    <div class="tool-main" role="main">
+      <div class="container">
+  <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
+  <h1>Slugify 工具</h1>
+  <p class="desc">将文字转换为 URL 友好的 slug 格式</p>
 
-<div class="container">
-      <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
-      <h1>Slugify 工具</h1>
-      <p class="desc">将文字转换为 URL 友好的 slug 格式</p>
-
-      <div class="card">
-        <div class="btn-row">
-          <button id="btnPaste">粘贴</button>
-          <button id="btnCopy" class="primary">复制结果</button>
-          <button id="btnClear">清空</button>
-        </div>
-
-        <label for="input">输入文字</label>
-        <input type="text" id="input" placeholder="例如: Hello World 你好世界!">
-
-        <div class="options">
-          <label>
-            <input type="checkbox" id="optLower" checked="">
-            转小写
-          </label>
-          <label>
-            分隔符:
-            <select id="optSeparator" style="width: auto; margin: 0; padding: 6px 10px">
-              <option value="-">连字符 (-)</option>
-              <option value="_">下划线 (_)</option>
-              <option value=".">点号 (.)</option>
-              <option value="">无分隔符</option>
-            </select>
-          </label>
-          <label>
-            <input type="checkbox" id="optTrim" checked="">
-            去除首尾空格
-          </label>
-          <label>
-            <input type="checkbox" id="optStrict">
-            严格模式 (仅保留 a-z 0-9)
-          </label>
-        </div>
-
-        <div class="result-box">
-          <div class="label">Slug 结果</div>
-          <div class="value" id="output">-</div>
-        </div>
-
-        <div class="stats">
-          <span>
-            原文长度:
-            <strong id="origLen">0</strong>
-          </span>
-          <span>
-            Slug 长度:
-            <strong id="slugLen">0</strong>
-          </span>
-        </div>
-
-        <div id="status" class="status"></div>
-      </div>
-
-      <footer>
-        <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
-          View source
-        </a>
-        · 纯前端工具 · 无服务器 ·
-        <a href="../../index.html">WebUtils</a>
-      </footer>
+  <div class="card">
+    <div class="btn-row">
+      <button id="btnPaste">粘贴</button>
+      <button id="btnCopy" class="primary">复制结果</button>
+      <button id="btnClear">清空</button>
     </div>
 
-<script>
-var inputEl = document.getElementById("input");
-      var outputEl = document.getElementById("output");
-      var origLenEl = document.getElementById("origLen");
-      var slugLenEl = document.getElementById("slugLen");
-      var statusEl = document.getElementById("status");
+    <label for="input">输入文字</label>
+    <input type="text" id="input" placeholder="例如: Hello World 你好世界!">
 
-      var optLower = document.getElementById("optLower");
-      var optSeparator = document.getElementById("optSeparator");
-      var optTrim = document.getElementById("optTrim");
-      var optStrict = document.getElementById("optStrict");
+    <div class="options">
+      <label>
+        <input type="checkbox" id="optLower" checked="">
+        转小写
+      </label>
+      <label>
+        分隔符:
+        <select id="optSeparator" style="width: auto; margin: 0; padding: 6px 10px">
+          <option value="-">连字符 (-)</option>
+          <option value="_">下划线 (_)</option>
+          <option value=".">点号 (.)</option>
+          <option value="">无分隔符</option>
+        </select>
+      </label>
+      <label>
+        <input type="checkbox" id="optTrim" checked="">
+        去除首尾空格
+      </label>
+      <label>
+        <input type="checkbox" id="optStrict">
+        严格模式 (仅保留 a-z 0-9)
+      </label>
+    </div>
 
-      function showStatus(msg, type) {
-        statusEl.textContent = msg;
-        statusEl.className = "status " + (type || "");
-      }
+    <div class="result-box">
+      <div class="label">Slug 结果</div>
+      <div class="value" id="output">-</div>
+    </div>
 
-      var charMap = {
-        à: "a",
-        á: "a",
-        â: "a",
-        ã: "a",
-        ä: "a",
-        å: "a",
-        æ: "ae",
-        ç: "c",
-        è: "e",
-        é: "e",
-        ê: "e",
-        ë: "e",
-        ì: "i",
-        í: "i",
-        î: "i",
-        ï: "i",
-        ð: "d",
-        ñ: "n",
-        ò: "o",
-        ó: "o",
-        ô: "o",
-        õ: "o",
-        ö: "o",
-        ø: "o",
-        ù: "u",
-        ú: "u",
-        û: "u",
-        ü: "u",
-        ý: "y",
-        þ: "th",
-        ÿ: "y",
-        ß: "ss",
-        ł: "l",
-        ő: "o",
-        ű: "u",
-        ţ: "t",
-        ą: "a",
-        ę: "e",
-        ś: "s",
-        ź: "z",
-        ż: "z",
-        ń: "n",
-        ć: "c",
-        ĺ: "l",
-        ŕ: "r",
-        ď: "d",
-        ť: "t",
-        ň: "n",
-        ľ: "l",
-        "&": "and",
-        "@": "at",
-        "©": "c",
-        "®": "r",
-        "™": "tm"
-      };
+    <div class="stats">
+      <span>
+        原文长度:
+        <strong id="origLen">0</strong>
+      </span>
+      <span>
+        Slug 长度:
+        <strong id="slugLen">0</strong>
+      </span>
+    </div>
 
-      function slugify(text) {
-        var separator = optSeparator.value;
-        var lower = optLower.checked;
-        var trim = optTrim.checked;
-        var strict = optStrict.checked;
+    <div id="status" class="status"></div>
+  </div>
 
-        var result = text;
+  <footer>
+    <a href="https://github.com/chicogong/html-tools" target="_blank" rel="noreferrer">
+      View source
+    </a>
+    · 纯前端工具 · 无服务器 ·
+    <a href="../../index.html">WebUtils</a>
+  </footer>
+</div>
+    </div>
+    
+    <script>
+  var inputEl = document.getElementById("input");
+  var outputEl = document.getElementById("output");
+  var origLenEl = document.getElementById("origLen");
+  var slugLenEl = document.getElementById("slugLen");
+  var statusEl = document.getElementById("status");
 
-        if (trim) {
-          result = result.trim();
-        }
+  var optLower = document.getElementById("optLower");
+  var optSeparator = document.getElementById("optSeparator");
+  var optTrim = document.getElementById("optTrim");
+  var optStrict = document.getElementById("optStrict");
 
-        if (lower) {
-          result = result.toLowerCase();
-        }
+  function showStatus(msg, type) {
+    statusEl.textContent = msg;
+    statusEl.className = "status " + (type || "");
+  }
 
-        result = result.replace(/[^\u0000-\u007F]/g, function (c) {
-          return charMap[c] || "";
-        });
+  var charMap = {
+    à: "a",
+    á: "a",
+    â: "a",
+    ã: "a",
+    ä: "a",
+    å: "a",
+    æ: "ae",
+    ç: "c",
+    è: "e",
+    é: "e",
+    ê: "e",
+    ë: "e",
+    ì: "i",
+    í: "i",
+    î: "i",
+    ï: "i",
+    ð: "d",
+    ñ: "n",
+    ò: "o",
+    ó: "o",
+    ô: "o",
+    õ: "o",
+    ö: "o",
+    ø: "o",
+    ù: "u",
+    ú: "u",
+    û: "u",
+    ü: "u",
+    ý: "y",
+    þ: "th",
+    ÿ: "y",
+    ß: "ss",
+    ł: "l",
+    ő: "o",
+    ű: "u",
+    ţ: "t",
+    ą: "a",
+    ę: "e",
+    ś: "s",
+    ź: "z",
+    ż: "z",
+    ń: "n",
+    ć: "c",
+    ĺ: "l",
+    ŕ: "r",
+    ď: "d",
+    ť: "t",
+    ň: "n",
+    ľ: "l",
+    "&": "and",
+    "@": "at",
+    "©": "c",
+    "®": "r",
+    "™": "tm"
+  };
 
-        if (strict) {
-          result = result.replace(/[^a-z0-9\s]/gi, "");
-        } else {
-          result = result.replace(/[^a-z0-9\s\-_]/gi, "");
-        }
+  function slugify(text) {
+    var separator = optSeparator.value;
+    var lower = optLower.checked;
+    var trim = optTrim.checked;
+    var strict = optStrict.checked;
 
-        result = result.replace(/\s+/g, separator);
+    var result = text;
 
-        if (separator) {
-          var sep = separator.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
-          result = result.replace(new RegExp(sep + "+", "g"), separator);
-          result = result.replace(new RegExp("^" + sep + "|" + sep + "$", "g"), "");
-        }
+    if (trim) {
+      result = result.trim();
+    }
 
-        return result;
-      }
+    if (lower) {
+      result = result.toLowerCase();
+    }
 
-      function update() {
-        var input = inputEl.value;
-        var slug = slugify(input);
+    result = result.replace(/[^\u0000-\u007F]/g, function (c) {
+      return charMap[c] || "";
+    });
 
-        outputEl.textContent = slug || "-";
-        origLenEl.textContent = input.length;
-        slugLenEl.textContent = slug.length;
-      }
+    if (strict) {
+      result = result.replace(/[^a-z0-9\s]/gi, "");
+    } else {
+      result = result.replace(/[^a-z0-9\s\-_]/gi, "");
+    }
 
-      document.getElementById("btnPaste").onclick = async function () {
-        try {
-          inputEl.value = await navigator.clipboard.readText();
-          update();
-          showStatus("已粘贴", "success");
-        } catch (e) {
-          showStatus("无法访问剪贴板", "error");
-        }
-      };
+    result = result.replace(/\s+/g, separator);
 
-      document.getElementById("btnCopy").onclick = async function () {
-        var slug = outputEl.textContent;
-        if (slug && slug !== "-") {
-          await navigator.clipboard.writeText(slug);
-          showStatus("已复制", "success");
-        }
-      };
+    if (separator) {
+      var sep = separator.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+      result = result.replace(new RegExp(sep + "+", "g"), separator);
+      result = result.replace(new RegExp("^" + sep + "|" + sep + "$", "g"), "");
+    }
 
-      document.getElementById("btnClear").onclick = function () {
-        inputEl.value = "";
-        update();
-        showStatus("已清空", "success");
-      };
+    return result;
+  }
 
-      inputEl.addEventListener("input", update);
-      optLower.addEventListener("change", update);
-      optSeparator.addEventListener("change", update);
-      optTrim.addEventListener("change", update);
-      optStrict.addEventListener("change", update);
+  function update() {
+    var input = inputEl.value;
+    var slug = slugify(input);
 
-      window.toggleTheme = function () {
-        const html = document.documentElement;
-        const btn = document.querySelector(".theme-toggle");
-        const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
-        html.setAttribute("data-theme", next);
-        btn.textContent = next === "light" ? "☀️" : "🌙";
-        localStorage.setItem("theme", next);
-      };
-      (function () {
-        const saved = localStorage.getItem("theme");
-        if (saved) {
-          document.documentElement.setAttribute("data-theme", saved);
-          const btn = document.querySelector(".theme-toggle");
-          if (btn) btn.textContent = saved === "light" ? "☀️" : "🌙";
-        }
-      })();
+    outputEl.textContent = slug || "-";
+    origLenEl.textContent = input.length;
+    slugLenEl.textContent = slug.length;
+  }
+
+  document.getElementById("btnPaste").onclick = async function () {
+    try {
+      inputEl.value = await navigator.clipboard.readText();
+      update();
+      showStatus("已粘贴", "success");
+    } catch (e) {
+      showStatus("无法访问剪贴板", "error");
+    }
+  };
+
+  document.getElementById("btnCopy").onclick = async function () {
+    var slug = outputEl.textContent;
+    if (slug && slug !== "-") {
+      await navigator.clipboard.writeText(slug);
+      showStatus("已复制", "success");
+    }
+  };
+
+  document.getElementById("btnClear").onclick = function () {
+    inputEl.value = "";
+    update();
+    showStatus("已清空", "success");
+  };
+
+  inputEl.addEventListener("input", update);
+  optLower.addEventListener("change", update);
+  optSeparator.addEventListener("change", update);
+  optTrim.addEventListener("change", update);
+  optStrict.addEventListener("change", update);
+
+  window.toggleTheme = function () {
+    const html = document.documentElement;
+    const btn = document.querySelector(".theme-toggle");
+    const next = html.getAttribute("data-theme") === "light" ? "dark" : "light";
+    html.setAttribute("data-theme", next);
+    btn.textContent = next === "light" ? "☀️" : "🌙";
+    localStorage.setItem("theme", next);
+  };
+  (function () {
+    const saved = localStorage.getItem("theme");
+    if (saved) {
+      document.documentElement.setAttribute("data-theme", saved);
+      const btn = document.querySelector(".theme-toggle");
+      if (btn) btn.textContent = saved === "light" ? "☀️" : "🌙";
+    }
+  })();
 </script>
+    
+    <!-- 全局 UI 注入 -->
+    <script src="../../assets/js/tool-chrome.js"></script>
+  </body>
+</html>
