@@ -30,6 +30,13 @@
   // ⚠️ 必须在 IIFE 顶层同步捕获 —— DOMContentLoaded 回调里 currentScript 已是 null
   var _currentScript = doc.currentScript;
   var THEME_KEY = 'theme';
+  var SCRIPT_CACHE_BUST = '';
+
+  if (_currentScript && _currentScript.src) {
+    try {
+      SCRIPT_CACHE_BUST = new URL(_currentScript.src).search || '';
+    } catch (e) {}
+  }
 
   /** 安全读取 localStorage */
   function lsGet(k) {
@@ -38,6 +45,11 @@
   /** 安全写入 localStorage */
   function lsSet(k, v) {
     try { localStorage.setItem(k, v); } catch (e) {}
+  }
+
+  function withScriptCacheBust(src) {
+    if (!SCRIPT_CACHE_BUST) return src;
+    return src + (src.indexOf('?') === -1 ? SCRIPT_CACHE_BUST : '&' + SCRIPT_CACHE_BUST.slice(1));
   }
 
   /* --------------------------------------------------------
@@ -288,6 +300,7 @@
    * ------------------------------------------------------ */
   window.ToolChrome = Object.assign({
     version: '2.0',
+    cacheBust: SCRIPT_CACHE_BUST,
     getTheme: currentTheme,
     setTheme: applyTheme,
   }, window.ToolChrome || {});
@@ -298,8 +311,8 @@
   function loadSharedTranslate() {
     var homeUrl = resolveHomeUrl();
     var rootPath = homeUrl.replace(/\/index\.html$/, '');
-    var translateSrc = rootPath + '/assets/js/translate.js';
-    var bootstrapSrc = rootPath + '/assets/js/translation-bootstrap.js';
+    var translateSrc = withScriptCacheBust(rootPath + '/assets/js/translate.js');
+    var bootstrapSrc = withScriptCacheBust(rootPath + '/assets/js/translation-bootstrap.js');
 
     function ensureScript(scriptId, src, callback) {
       var existing = doc.getElementById(scriptId);
