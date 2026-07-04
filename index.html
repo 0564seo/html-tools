@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -233,6 +233,7 @@
           </div>
         </div>
         <div class="header-right">
+          <div id="site-language-switcher" data-translate-host="home" class="ignore-translate notranslate"></div>
           <div class="hero-stats">
             <div class="stat-item">
               <span class="stat-number" id="tool-count">1086</span>
@@ -10201,6 +10202,8 @@
       // 按热门度稳定排序：pop 高的排前面，pop 相同则保持原顺序（默认 0）
       TOOLS.sort((a, b) => (b.pop || 0) - (a.pop || 0));
     </script>
+    <script src="assets/js/translate.js" defer></script>
+    <script src="assets/js/translation-bootstrap.js" defer></script>
     <script src="assets/js/main.js" defer></script>
   </body>
 </html>

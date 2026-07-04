@@ -174,6 +174,7 @@
       '#tcHome svg{width:16px;height:16px;flex-shrink:0}',
       /* 主题切换圆钮 */
       '#tcThemeBtn{position:fixed;bottom:20px;right:20px;width:46px;height:46px;padding:0;border-radius:var(--tc-radius-circle);background:none;border:1.5px solid var(--tc-border)}',
+      '#tcTranslate{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);pointer-events:auto;z-index:2147483001}',
       '#tcThemeBtn svg{width:18px;height:18px}',
       /* 日/月图标切换 */
       '.tc-icon-sun{display:none}',
@@ -184,6 +185,7 @@
       '  #tcHome{left:14px;bottom:14px;width:46px;height:46px;padding:0;border-radius:var(--tc-radius-circle)}',
       '  #tcHome .tc-label{display:none}',
       '  #tcThemeBtn{right:14px;bottom:14px}',
+      '  #tcTranslate{bottom:14px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 120px)}',
       '}',
       /* 打印隐藏 */
       '@media print{#tcChrome{display:none}}',
@@ -239,8 +241,14 @@
       applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
     });
 
+    var translateHost = doc.createElement('div');
+    translateHost.id = 'tcTranslate';
+    translateHost.className = 'ignore-translate notranslate';
+    translateHost.setAttribute('data-translate-host', 'tool');
+
     wrap.appendChild(home);
     wrap.appendChild(themeBtn);
+    wrap.appendChild(translateHost);
     doc.body.appendChild(wrap);
 
     // 通知扩展钩子
@@ -287,9 +295,44 @@
   /* --------------------------------------------------------
    * 启动
    * ------------------------------------------------------ */
+  function loadSharedTranslate() {
+    var homeUrl = resolveHomeUrl();
+    var rootPath = homeUrl.replace(/\/index\.html$/, '');
+    var translateSrc = rootPath + '/assets/js/translate.js';
+    var bootstrapSrc = rootPath + '/assets/js/translation-bootstrap.js';
+
+    function ensureScript(scriptId, src, callback) {
+      var existing = doc.getElementById(scriptId);
+      if (existing) {
+        if (typeof callback === 'function') {
+          callback();
+        }
+        return;
+      }
+
+      var script = doc.createElement('script');
+      script.id = scriptId;
+      script.src = src;
+      script.defer = true;
+      if (typeof callback === 'function') {
+        script.onload = callback;
+      }
+      doc.body.appendChild(script);
+    }
+
+    ensureScript('webutils-translate-runtime', translateSrc, function () {
+      ensureScript('webutils-translate-bootstrap', bootstrapSrc);
+    });
+
+    if (window.translate) {
+      ensureScript('webutils-translate-bootstrap', bootstrapSrc);
+    }
+  }
+
   function start() {
     injectFallbackCSS();
     injectChrome();
+    loadSharedTranslate();
     registerSW();
   }
 
